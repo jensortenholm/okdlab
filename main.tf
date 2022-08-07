@@ -83,7 +83,7 @@ module "okdhosts" {
   name        = each.key
   memory      = each.value.memory
   vcpus       = each.value.vcpus
-  vnc_address = "172.16.1.10"
-  network     = "newlabnet"
+  vnc_address = each.value.vnc_address
+  network     = each.value.network
   mac         = each.value.mac
 }

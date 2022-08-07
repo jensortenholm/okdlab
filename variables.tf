@@ -12,9 +12,11 @@ variable "coreos_image" {
 
 variable "okd_hosts" {
   type = map(object({
-    mac      = string
-    vcpus    = number
-    memory   = number
-    ignition = string
+    mac         = string
+    vcpus       = number
+    memory      = number
+    ignition    = string
+    vnc_address = string
+    network     = string
   }))
 }
