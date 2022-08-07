@@ -11,14 +11,14 @@ provider "libvirt" {
   uri = var.libvirt_uri
 }
 
-resource "libvirt_volume" "almalinux" {
-  name   = "almalinux"
-  source = "AlmaLinux-8-GenericCloud-latest.x86_64.qcow2"
+resource "libvirt_volume" "el" {
+  name   = "el"
+  source = var.el_image
 }
 
 resource "libvirt_volume" "utility" {
   name           = "utility.qcow2"
-  base_volume_id = libvirt_volume.almalinux.id
+  base_volume_id = libvirt_volume.el.id
   size           = 21474836480
 }
 
@@ -58,7 +58,7 @@ resource "libvirt_domain" "utility" {
 
 resource "libvirt_volume" "coreos" {
   name   = "coreos"
-  source = "fedora-coreos-35.20220327.3.0-qemu.x86_64.qcow2"
+  source = var.coreos_image
 }
 
 locals {
