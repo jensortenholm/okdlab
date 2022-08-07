@@ -126,7 +126,7 @@ Copy the .ign files to the directory where you plan to run terraform from.
 
 ### Edit main.tf
 
-Open up main.tf in your favorite editor, and update the following:
+Open up main.tf and terraform.tfvars in your favorite editor, and update the following:
 
 * The libvirt provider URI, to point at your KVM host.
 * Update image filenames to what you downloaded.
@@ -138,6 +138,10 @@ Open up main.tf in your favorite editor, and update the following:
 The utility server is configured using cloud-init, so edit the cloud_init.cfg and update IP addresses, domainnames, passwords etc.
 
 ## Install
+
+Initialize your terraform directory, to download necessary providers etc:
+
+    terraform init
 
 With these preparations in place, run terraform plan and check that the output looks reasonable:
 

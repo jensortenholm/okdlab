@@ -22,13 +22,9 @@ resource "libvirt_volume" "utility" {
   size           = 21474836480
 }
 
-data "template_file" "user_data" {
-  template = file("${path.module}/cloud_init.cfg")
-}
-
 resource "libvirt_cloudinit_disk" "commoninit" {
   name      = "commoninit.iso"
-  user_data = data.template_file.user_data.rendered
+  user_data = templatefile("${path.module}/cloud_init.cfg", {})
   pool      = "default"
 }
 
@@ -62,149 +58,32 @@ resource "libvirt_domain" "utility" {
 
 resource "libvirt_volume" "coreos" {
   name   = "coreos"
-  source = "fedora-coreos-35.20220116.2.0-qemu.x86_64.qcow2"
-}
-
-resource "libvirt_ignition" "bootstrap_ign" {
-  name    = "bootstrap.ign"
-  content = "bootstrap.ign"
-}
-
-resource "libvirt_ignition" "master_ign" {
-  name    = "master.ign"
-  content = "master.ign"
-}
-
-resource "libvirt_ignition" "worker_ign" {
-  name = "worker.ign"
-  content = "worker.ign"
-}
-
-resource "libvirt_volume" "bootstrap" {
-  name           = "bootstrap.qcow2"
-  base_volume_id = libvirt_volume.coreos.id
-  size           = 107374182400
-}
-
-resource "libvirt_volume" "master" {
-  count          = 3
-  name           = "master${count.index}.qcow2"
-  base_volume_id = libvirt_volume.coreos.id
-  size           = 107374182400
-}
-
-resource "libvirt_volume" "worker" {
-  count          = 2
-  name           = "worker${count.index}.qcow2"
-  base_volume_id = libvirt_volume.coreos.id
-  size           = 107374182400
-}
-
-resource "libvirt_domain" "bootstrap" {
-  name   = "bootstrap"
-  memory = "16384"
-  vcpu   = 4
-
-  coreos_ignition = libvirt_ignition.bootstrap_ign.id
-
-  graphics {
-    type           = "vnc"
-    listen_type    = "address"
-    listen_address = "172.16.1.10"
-  }
-
-  console {
-    type        = "pty"
-    target_port = "0"
-    target_type = "virtio"
-  }
-
-  disk {
-    volume_id = libvirt_volume.bootstrap.id
-  }
-
-  network_interface {
-    network_name   = "newlabnet"
-    bridge         = "newlabnet"
-    hostname       = "bootstrap"
-    mac            = "12:22:33:44:55:50"
-  }
+  source = "fedora-coreos-35.20220327.3.0-qemu.x86_64.qcow2"
 }
 
 locals {
-  masters = {
-    "master1" = { instance = 0, mac = "12:22:33:44:55:51" },
-    "master2" = { instance = 1, mac = "12:22:33:44:55:52" },
-    "master3" = { instance = 2, mac = "12:22:33:44:55:53" }
-  }
-  workers = {
-    "worker1" = { instance = 0, mac = "12:22:33:44:55:61" },
-    "worker2" = { instance = 1, mac = "12:22:33:44:55:62" }
-  }
+  unique_ignitions = toset([for k, v in var.okd_hosts : v.ignition])
 }
 
-resource "libvirt_domain" "masters" {
-  for_each = local.masters
+resource "libvirt_ignition" "ignition" {
+  for_each = local.unique_ignitions
 
-  name     = each.key
-  memory   = "16384"
-  vcpu     = 4
-
-  coreos_ignition = libvirt_ignition.master_ign.id
-
-  graphics {
-    type           = "vnc"
-    listen_type    = "address"
-    listen_address = "172.16.1.10"
-  }
-
-  console {
-    type        = "pty"
-    target_port = "0"
-    target_type = "virtio"
-  }
-
-  disk {
-    volume_id = libvirt_volume.master[each.value.instance].id
-  }
-
-  network_interface {
-    network_name = "newlabnet"
-    bridge       = "newlabnet"
-    hostname     = each.key
-    mac          = each.value.mac
-  }
+  name    = each.value
+  content = each.value
 }
 
-resource "libvirt_domain" "workers" {
-  for_each = local.workers
+module "okdhosts" {
+  source      = "./modules/okdhost"
 
-  name     = each.key
-  memory   = "16384"
-  vcpu     = 4
+  for_each    = var.okd_hosts
 
-  coreos_ignition = libvirt_ignition.worker_ign.id
-
-  graphics {
-    type           = "vnc"
-    listen_type    = "address"
-    listen_address = "172.16.1.10"
-  }
-
-  console {
-    type        = "pty"
-    target_port = "0"
-    target_type = "virtio"
-  }
-
-  disk {
-    volume_id = libvirt_volume.worker[each.value.instance].id
-  }
-
-  network_interface {
-    network_name = "newlabnet"
-    bridge       = "newlabnet"
-    hostname     = each.key
-    mac          = each.value.mac
-  }
+  base_volume = libvirt_volume.coreos.id
+  ignition_id = libvirt_ignition.ignition[each.value.ignition].id
+  disk_size   = 107374182400
+  name        = each.key
+  memory      = each.value.memory
+  vcpus       = each.value.vcpus
+  vnc_address = "172.16.1.10"
+  network     = "newlabnet"
+  mac         = each.value.mac
 }
