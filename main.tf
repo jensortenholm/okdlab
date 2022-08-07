@@ -8,7 +8,7 @@ terraform {
  }
 
 provider "libvirt" {
-  uri = "qemu+ssh://root@172.16.1.10/system"
+  uri = var.libvirt_uri
 }
 
 resource "libvirt_volume" "almalinux" {

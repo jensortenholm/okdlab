@@ -1,3 +1,5 @@
+libvirt_uri = "qemu+ssh://root@172.16.1.10/system"
+
 okd_hosts = {
   bootstrap = {
     mac      = "12:22:33:44:55:50"
