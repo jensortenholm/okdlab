@@ -14,15 +14,15 @@ resource "libvirt_volume" "disk" {
 }
 
 resource "libvirt_cloudinit_disk" "cloudinit" {
-  name           = "cloudinit.iso"
-  user_data      = var.user_data
-  pool           = "default"
+  name      = "cloudinit.iso"
+  user_data = var.user_data
+  pool      = "default"
 }
 
 resource "libvirt_domain" "host" {
-  name            = var.name
-  memory          = var.memory
-  vcpu            = var.vcpus
+  name   = var.name
+  memory = var.memory
+  vcpu   = var.vcpus
 
   cloudinit = libvirt_cloudinit_disk.cloudinit.id
 

@@ -1,18 +1,18 @@
 libvirt_uri = "qemu+ssh://root@172.16.1.10/system"
 
-el_image = "AlmaLinux-8-GenericCloud-latest.x86_64.qcow2"
+el_image     = "AlmaLinux-8-GenericCloud-latest.x86_64.qcow2"
 coreos_image = "fedora-coreos-35.20220327.3.0-qemu.x86_64.qcow2"
 
 utility_hosts = {
   utility = {
-    mac         = "12:22:33:44:55:30"
-    vcpus       = 2
-    memory      = 4096
-    disk_size   = 21474836480
-    network     = "newlabnet"
+    mac       = "12:22:33:44:55:30"
+    vcpus     = 2
+    memory    = 4096
+    disk_size = 21474836480
+    network   = "newlabnet"
   }
 }
- 
+
 okd_hosts = {
   bootstrap = {
     mac         = "12:22:33:44:55:50"

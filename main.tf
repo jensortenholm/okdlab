@@ -5,7 +5,7 @@ terraform {
       source = "dmacvicar/libvirt"
     }
   }
- }
+}
 
 provider "libvirt" {
   uri = var.libvirt_uri
@@ -17,9 +17,9 @@ resource "libvirt_volume" "el" {
 }
 
 module "utility" {
-  source      = "./modules/utility"
+  source = "./modules/utility"
 
-  for_each    = var.utility_hosts
+  for_each = var.utility_hosts
 
   base_volume = libvirt_volume.el.id
   user_data   = templatefile("${path.module}/cloud_init.cfg", {})
@@ -48,9 +48,9 @@ resource "libvirt_ignition" "ignition" {
 }
 
 module "okdhosts" {
-  source      = "./modules/okdhost"
+  source = "./modules/okdhost"
 
-  for_each    = var.okd_hosts
+  for_each = var.okd_hosts
 
   base_volume = libvirt_volume.coreos.id
   ignition_id = libvirt_ignition.ignition[each.value.ignition].id

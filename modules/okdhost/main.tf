@@ -14,9 +14,9 @@ resource "libvirt_volume" "disk" {
 }
 
 resource "libvirt_domain" "host" {
-  name            = var.name
-  memory          = var.memory
-  vcpu            = var.vcpus
+  name   = var.name
+  memory = var.memory
+  vcpu   = var.vcpus
 
   coreos_ignition = var.ignition_id
 
