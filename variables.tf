@@ -20,3 +20,13 @@ variable "okd_hosts" {
     network     = string
   }))
 }
+
+variable "utility_hosts" {
+  type = map(object({
+    mac       = string
+    vcpus     = number
+    memory    = number
+    disk_size = number
+    network   = string
+  }))
+}

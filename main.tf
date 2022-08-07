@@ -16,44 +16,19 @@ resource "libvirt_volume" "el" {
   source = var.el_image
 }
 
-resource "libvirt_volume" "utility" {
-  name           = "utility.qcow2"
-  base_volume_id = libvirt_volume.el.id
-  size           = 21474836480
-}
+module "utility" {
+  source      = "./modules/utility"
 
-resource "libvirt_cloudinit_disk" "commoninit" {
-  name      = "commoninit.iso"
-  user_data = templatefile("${path.module}/cloud_init.cfg", {})
-  pool      = "default"
-}
+  for_each    = var.utility_hosts
 
-resource "libvirt_domain" "utility" {
-  name   = "utility"
-  memory = "4096"
-  vcpu   = 2
-
-  cloudinit = libvirt_cloudinit_disk.commoninit.id
-
-  qemu_agent = true
-
-  console {
-    type        = "pty"
-    target_port = "0"
-    target_type = "serial"
-  }
-
-  disk {
-    volume_id = libvirt_volume.utility.id
-  }
-
-  network_interface {
-    network_name   = "newlabnet"
-    bridge         = "newlabnet"
-    hostname       = "utility"
-    mac            = "12:22:33:44:55:30"
-    wait_for_lease = true
-  }
+  base_volume = libvirt_volume.el.id
+  user_data   = templatefile("${path.module}/cloud_init.cfg", {})
+  disk_size   = each.value.disk_size
+  name        = each.key
+  memory      = each.value.memory
+  vcpus       = each.value.vcpus
+  network     = each.value.network
+  mac         = each.value.mac
 }
 
 resource "libvirt_volume" "coreos" {
