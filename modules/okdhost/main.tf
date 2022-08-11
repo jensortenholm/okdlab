@@ -13,6 +13,13 @@ resource "libvirt_volume" "disk" {
   size           = var.disk_size
 }
 
+resource "libvirt_volume" "extra" {
+  for_each = var.extra_disks == null ? {} : var.extra_disks
+
+  name = "${var.name}-${each.key}.qcow2"
+  size = each.value
+}
+
 resource "libvirt_domain" "host" {
   name   = var.name
   memory = var.memory
@@ -34,6 +41,14 @@ resource "libvirt_domain" "host" {
 
   disk {
     volume_id = libvirt_volume.disk.id
+  }
+
+  dynamic "disk" {
+    for_each = var.extra_disks == null ? {} : var.extra_disks
+
+    content {
+      volume_id = libvirt_volume.extra[disk.key].id
+    }
   }
 
   network_interface {

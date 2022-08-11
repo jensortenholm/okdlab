@@ -18,6 +18,8 @@ variable "okd_hosts" {
     ignition    = string
     vnc_address = string
     network     = string
+    disk_size   = number
+    extra_disks = optional(map(number))
   }))
 }
 

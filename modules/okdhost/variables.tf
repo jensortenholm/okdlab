@@ -33,3 +33,7 @@ variable "network" {
 variable "mac" {
   type = string
 }
+
+variable "extra_disks" {
+  type = map(number)
+}

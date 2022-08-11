@@ -21,6 +21,7 @@ okd_hosts = {
     ignition    = "bootstrap.ign"
     vnc_address = "172.16.1.10"
     network     = "newlabnet"
+    disk_size   = 107374182400
   }
 
   master1 = {
@@ -30,6 +31,7 @@ okd_hosts = {
     ignition    = "master.ign"
     vnc_address = "172.16.1.10"
     network     = "newlabnet"
+    disk_size   = 107374182400
   }
 
   master2 = {
@@ -39,6 +41,7 @@ okd_hosts = {
     ignition    = "master.ign"
     vnc_address = "172.16.1.10"
     network     = "newlabnet"
+    disk_size   = 107374182400
   }
 
   master3 = {
@@ -48,6 +51,7 @@ okd_hosts = {
     ignition    = "master.ign"
     vnc_address = "172.16.1.10"
     network     = "newlabnet"
+    disk_size   = 107374182400
   }
 
   worker1 = {
@@ -57,6 +61,10 @@ okd_hosts = {
     ignition    = "worker.ign"
     vnc_address = "172.16.1.10"
     network     = "newlabnet"
+    disk_size   = 107374182400
+    extra_disks = {
+      "extra-0" = 107374182400
+    }
   }
 
   worker2 = {
@@ -66,6 +74,10 @@ okd_hosts = {
     ignition    = "worker.ign"
     vnc_address = "172.16.1.10"
     network     = "newlabnet"
+    disk_size   = 107374182400
+    extra_disks = {
+      "extra-0" = 107374182400
+    }
   }
 
   worker3 = {
@@ -75,5 +87,9 @@ okd_hosts = {
     ignition    = "worker.ign"
     vnc_address = "172.16.1.10"
     network     = "newlabnet"
+    disk_size   = 107374182400
+    extra_disks = {
+      "extra-0" = 107374182400
+    }
   }
 }

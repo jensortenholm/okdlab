@@ -5,6 +5,7 @@ terraform {
       source = "dmacvicar/libvirt"
     }
   }
+  experiments = [module_variable_optional_attrs]
 }
 
 provider "libvirt" {
@@ -54,11 +55,12 @@ module "okdhosts" {
 
   base_volume = libvirt_volume.coreos.id
   ignition_id = libvirt_ignition.ignition[each.value.ignition].id
-  disk_size   = 107374182400
   name        = each.key
   memory      = each.value.memory
   vcpus       = each.value.vcpus
   vnc_address = each.value.vnc_address
   network     = each.value.network
   mac         = each.value.mac
+  disk_size   = each.value.disk_size
+  extra_disks = each.value.extra_disks
 }
