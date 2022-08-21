@@ -15,12 +15,15 @@ in this setup, but can be easily added with a dnsmasq configuration on the utili
 ## Preparing the environment
 
 The VMs used consists of one utility server running haproxy loadbalancer, one OKD bootstrap which can be removed once the installation is
-done, three OKD master nodes, and two OKD worker nodes. All VMs are installed and configured using terraform (see main.tf).
+done, three OKD master nodes, and three OKD worker nodes. All VMs are installed and configured using terraform (see main.tf).
+
+It is also possible to setup a cluster with only three nodes that act simultaneously as masters and workers, which can be a great option
+for a homelab with limited hardware resources.
 
 ### DHCP
 
 Static dhcp leases are added to the DHCP server for the necessary VMs. I've used custom MAC addresses on the VMs to make this easier and
-more predictable.
+more predictable. For example, for a full setup of 3 masters and 3 workers:
 
 ------------------------------------------------
 | Node      | IP          | MAC                |
@@ -51,7 +54,9 @@ OKD needs forward and reverse name resolution for all the nodes and some special
 
 ### Download client, installer and images
 
-Download the okd client and installer from: https://github.com/openshift/okd/releases
+Download the okd client and installer from: https://github.com/openshift/okd/releases. You will need the openshift-install package for
+the very release that you intend to install, but it is of course possible to update the cluster to newer releases once the install
+is done.
 
 To grab the correct fedora coreos image for this particular release, run the installer and grab the image location with jq:
 
@@ -84,31 +89,10 @@ The terraform manifests use a libvirt driver, which needs passwordless ssh to ro
 
 Once you have created this file, you'll likely want to make a backup of it elsewhere. The OKD installer deletes the file when it's done with it...
 
-Customize it according to your needs (see OKD documentation)
+The repository contains two example files. One for a setup with three master nodes and three worker nodes (install-config-3masters-3workers.yaml),
+and also one for a setup with only three master nodes (install-config-only3masters.yaml).
 
-    apiVersion: v1
-    baseDomain: mylab.mydomain.se
-    compute:
-    - hyperthreading: Enabled
-      name: worker
-      replicas: 2
-    controlPlane:
-      hyperthreading: Enabled
-      name: master
-      replicas: 3
-    metadata:
-      name: okd4
-    networking:
-      clusterNetwork:
-      - cidr: 10.128.0.0/14
-        hostPrefix: 23
-      networkType: OpenShiftSDN
-      serviceNetwork:
-      - 172.30.0.0/16
-    platform:
-      none: {}
-    pullSecret: '{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}'
-    sshKey: <paste contents of okd4.pub here, your public ssh key>
+Copy one of the template files to the name install-config.yaml, and customize it to your needs (see OKD documentation).
 
 ### Run openshift-install
 
@@ -125,9 +109,12 @@ Copy the .ign files to the directory where you plan to run terraform from.
 
     xz -d <filename>
 
-### Edit main.tf
+### Edit variables
 
-Open up main.tf and terraform.tfvars in your favorite editor, and update the following:
+Again, this repository contains two example variable files, one for a three master, three worker node setup (terraform-3workers.yaml) and also
+one for a three masters only setup (terraform-onlymasters.yaml).
+
+Copy the file you want to terraform.tfvars and customimze it to your needs, at the very least:
 
 * The libvirt provider URI, to point at your KVM host.
 * Update image filenames to what you downloaded.
@@ -136,7 +123,11 @@ Open up main.tf and terraform.tfvars in your favorite editor, and update the fol
 
 ### Edit cloud_init.cfg
 
-The utility server is configured using cloud-init, so edit the cloud_init.cfg and update IP addresses, domainnames, passwords etc.
+The utility server is configured using cloud-init. As load-balancing is done differently depending on your deployment scenario, this file is
+provided in two different versions. One for the three master, three worker node scenario (cloud_init-3workers.cfg), and one for the three
+master nodes only scenario (cloud_init-onlymasters.cfg).
+
+Copy the file you want to cloud_init.cfg, and customize it to your needs, updating IP addresses, domainnames, passwords etc.
 
 ## Install
 
@@ -152,13 +143,25 @@ If it does, go ahead and start the installation:
 
     terraform apply
 
-In my lab, the installation took about 45 minutes to complete. For the worker nodes to be added to the cluster, you need to manually approve their CSRs:
+Once the installation gets going (might take a while), you can monitor progress using the openshift client. For example:
+
+    export KUBECONFIG=<your okd directory>/auth/kubeconfig
+    oc get clusteroperators
+    oc get clusterversion
+
+In my lab, the installation took about 45 minutes to complete. If you have chosen a deployment with both master and worker nodes, you need to manually approve
+the worker nodes CSRs towards the end of the installation. The CSRs will come in two "waves", with a second set of CSRs appearing a short while after you have
+approved the first set:
 
     oc get csr
 
 Scan for "Pending" certificates. Then:
 
     oc adm certificate approve <csr-name>
+
+Or, all of them in one go:
+
+    oc get csr | grep Pending | awk '{print $1}' | xargs -n1 oc adm certificate approve
 
 To uninstall the cluster:
 

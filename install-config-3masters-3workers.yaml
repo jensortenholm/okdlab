@@ -1,0 +1,24 @@
+apiVersion: v1
+baseDomain: mylab.mydomain.se
+compute:
+- hyperthreading: Enabled
+  name: worker
+  replicas: 3
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  replicas: 3
+metadata:
+  name: okd4
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  networkType: OVNKubernetes
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  none: {}
+pullSecret: '{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}'
+sshKey: <insert your ssh public key here>
+
