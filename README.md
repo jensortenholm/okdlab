@@ -45,11 +45,11 @@ more predictable. For example, for a full setup of 3 masters and 3 workers:
 OKD needs forward and reverse name resolution for all the nodes and some special DNS entries which should point at the loadbalancer ip (utility):
 
 ------------------------------------------------
-| Name                           | IP          |
-| ------------------------------ | ----------- |
-| *.apps.okd4.mylab.mydomain.se  | 172.16.2.40 | 
-| api.okd4.mylab.mydomain.se     | 172.16.2.40 |
-| api-int.okd4.mylab.mydomain.se | 172.16.2.40 |
+| Name                            | IP          |
+| ------------------------------- | ----------- |
+| *.apps.okd4.mylab.mydomain.tld  | 172.16.2.40 | 
+| api.okd4.mylab.mydomain.tld     | 172.16.2.40 |
+| api-int.okd4.mylab.mydomain.tld | 172.16.2.40 |
 ------------------------------------------------
 
 ## Preparing the installation itself
