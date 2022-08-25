@@ -94,9 +94,9 @@ mirror.
 
 ## 3. Make OKD installation use the mirror
 
-To make the OKD installation process use your local mirror instead of the Internet to download the images, two things need to be changed in
-install-config.yaml - the ImageContentSourcePolicy information has to be added, and the mirror registry CA certificate needs to be added
-as a trusted CA for the installer to be able to verify it.
+To make the OKD installation process use your local mirror instead of the Internet to download the images, three things need to be changed in
+install-config.yaml - the ImageContentSourcePolicy information has to be added, the pull-secret needs to be updated with credentials for your
+mirror registry, and the mirror registry CA certificate needs to be added as a trusted CA for the installer to be able to verify it.
 
 For the ImageContentSourcePolicy information, take a peek at the imageContentSourcePolicy.yaml which was created in the results directory
 when you ran oc-mirror. Your addition to install-config.yaml will then look something like this (remember to update this to resemble
@@ -118,6 +118,21 @@ what oc-mirror created in the results file):
 
 This configuration essentially says that when the cluster tries to pull images with an image reference starting like what is specified in
 source, instead try to pull it from the mirror entry.
+
+The original install-config.yaml example in this repository used a fake pull secret, which works well for pulling images from the Internet.
+Your new mirrorregistry will however not be impressed by this, and you will need to change the pull secret to contain credentials for
+the mirrorregistry instead.
+
+An updated pull secret in install-config.yaml looks like this:
+
+    pullSecret: '{"auths":{"mirrorregistry.okd4.mylab.mydomain.tld:8443":{"auth":"aW5pdDpteXNlY3JldHBhc3N3b3Jk"}}}'
+
+What looks like a collection of scrambled characters is a base64 encoded string containing the mirrorregistry username (init by default),
+followed by a colon, followed by the password you set during mirror-registry installation. You can easily encode this yourself using:
+
+    printf "init:mycustompassword" | base64
+
+And just copy/paste the resulting string. Also, don't forget to update the FQDN of the mirrorregistry host.
 
 To add the trusted CA certificate, copy the contents of /etc/quay/quay-rootCA/rootCA.pem and add it to your install-config.yaml like this:
 
