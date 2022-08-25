@@ -4,13 +4,7 @@ Thu, 25 Aug 2022 20:13:06 +0200          -  Add short howto on how to use mirror
 
 Sun, 21 Aug 2022 22:40:29 +0200          -  Change domain tld to avoid collision with existing domain
 
-Sun, 21 Aug 2022 20:50:25 +0200          -  Update version info
-
 Sun, 21 Aug 2022 20:49:00 +0200          -  Provide examples for 3 master 3 worker deployment, as well as 3 masters only deployment
-
-Tue, 16 Aug 2022 21:39:21 +0200          -  Fix space typo
-
-Tue, 16 Aug 2022 21:37:48 +0200          -  Fix typo.
 
 Tue, 16 Aug 2022 21:36:40 +0200          -  Update README to add forgotten node in MAC address table, so that it matches the tfvars content
 
@@ -19,8 +13,6 @@ Tue, 16 Aug 2022 21:20:34 +0200          -  Add some variable validation.
 Sun, 14 Aug 2022 17:13:59 +0200          -  Add some variable descriptions and defaults.
 
 Thu, 11 Aug 2022 14:11:24 +0200          -  Make primary disk size configurable by variable, and add support for adding extra disks to okd hosts
-
-Sun, 7 Aug 2022 21:40:09 +0200           -  Formatting
 
 Sun, 7 Aug 2022 21:37:00 +0200           -  Move utility host to its own module and feed data to it from variables
 
