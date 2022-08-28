@@ -40,12 +40,12 @@ latest release 1.9.9:
 There's a lot of sample files in this repository, so I prefer to make my own install directory and copy the samples I use there before
 customizing them.
 
-  mkdir install
+    mkdir install
 
 As a first step we get things running in the cluster by installing the main components.
 
-  cd install
-  cp <rook-clone-dir>/deploy/examples/{crds,common,operator-openshift,cluster}.yaml .
+    cd install
+    cp <rook-clone-dir>/deploy/examples/{crds,common,operator-openshift,cluster}.yaml .
 
 There's a lot of options and comments in these sample files, most of which you do not need to modify for a basic setup like this.
 
