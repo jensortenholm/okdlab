@@ -27,6 +27,7 @@ module "utility" {
   disk_size   = each.value.disk_size
   name        = each.key
   memory      = each.value.memory
+  vnc_address = each.value.vnc_address
   vcpus       = each.value.vcpus
   network     = each.value.network
   mac         = each.value.mac

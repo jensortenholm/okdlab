@@ -29,11 +29,12 @@ variable "okd_hosts" {
 
 variable "utility_hosts" {
   type = map(object({
-    mac       = string
-    vcpus     = number
-    memory    = number
-    disk_size = number
-    network   = string
+    mac         = string
+    vcpus       = number
+    memory      = number
+    vnc_address = string
+    disk_size   = number
+    network     = string
   }))
   description = "Map of utility hosts to create. Only one host is needed, leave this variable empty if no utility host is needed. Key is used as servername, value is another map with host configuration parameters."
   default     = {}

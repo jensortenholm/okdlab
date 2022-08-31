@@ -57,3 +57,8 @@ variable "mac" {
     error_message = "The MAC must be a valid MAC-address using colon separation. For example: '01:02:03:04:05:06'."
   }
 }
+
+variable "vnc_address" {
+  type        = string
+  description = "IP address used for the KVM VNC console to listen. Usually the KVM hosts management IP."
+}

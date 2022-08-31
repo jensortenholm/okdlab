@@ -28,6 +28,12 @@ resource "libvirt_domain" "host" {
 
   qemu_agent = true
 
+  graphics {
+    type           = "vnc"
+    listen_type    = "address"
+    listen_address = var.vnc_address
+  }
+
   console {
     type        = "pty"
     target_port = "0"
