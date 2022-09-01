@@ -6,15 +6,65 @@ This is by no means a polished and secured setup, but rather a quick and dirty s
 
 I have tested this method of setting up OKD with versions 4.9, 4.10 as well as 4.11.
 
-## Environment
+## Environment and KVM host setup
 
-In my homelab I have one server running AlmaLinux, with KVM installed. It is connected to my lab network using 2 VLANs, one which I use
+In my homelab I have one server running AlmaLinux 9, with KVM installed. It is connected to my lab network using 2 VLANs, one which I use
 for management access of the KVM host itself, and the other is used for the VMs.
 
 My router/firewall serves DHCP and DNS to all my networks, so the necessary customizations of these services for OKD is not included
 in this setup, but can be easily added with a dnsmasq configuration on the utility node if needed.
 
-## Preparing the environment
+The KVM host is based on a minimal install of AlmaLinux 9. The first network interface on the server is configured with the management
+VLAN untagged, so the installation picks up its IP address with the default DHCP configuration.
+
+Once the OS is installed and the server has rebooted, a few configurations are needed.
+
+### Virtualization is installed and enabled
+
+    yum -y group install "Virtualization Host"
+    yum -y group install "Virtualization Client"
+    systemctl enable --now libvirtd
+
+### Configuration of network bridge
+
+A network bridge is needed to connect VMs to the tagged VLAN 10 on the network interface.  Obviously, you'd want to adjust this depending
+on how you intend to connect your VMs to the network.
+
+    nmcli connection add type bridge con-name newlabnet ifname newlabnet ipv4.method disabled ipv6.method ignore
+    nmcli connection add type vlan con-name vlan10 ifname eno1.10 dev eno1 id 10 master newlabnet slave-type bridge
+
+The bridge also needs to be configured as a libvirt network. Create the file newlabnet.xml:
+
+    <network>
+      <name>newlabnet</name>
+      <forward mode='bridge'/>
+      <bridge name='newlabnet'/>
+    </network>
+
+Then configure the network with libvirt:
+
+    virsh net-define newlabnet.xml
+    virsh net-start newlabnet
+    virsh net-autostart newlabnet
+
+### Configuration of a default storage pool
+
+Create an XML-file pool_default.xml describing the default storage pool, using /var/lib/libvirt/images as the location on disk:
+
+    <pool type='dir'>
+      <name>default</name>
+      <target>
+        <path>/var/lib/libvirt/images</path>
+      </target>
+    </pool>
+
+Configure the storage pool:
+
+    virsh pool-define pool_default.xml
+    virsh pool-start default
+    virsh pool-autostart default
+
+## Preparing the environment for OKD
 
 The VMs used consists of one utility server running haproxy loadbalancer, one OKD bootstrap which can be removed once the installation is
 done, three OKD master nodes, and three OKD worker nodes. All VMs are installed and configured using terraform (see main.tf).
