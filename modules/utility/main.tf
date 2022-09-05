@@ -71,6 +71,5 @@ resource "libvirt_domain" "host" {
     bridge         = var.network
     hostname       = var.name
     mac            = var.mac
-    wait_for_lease = true
   }
 }
