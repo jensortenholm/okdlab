@@ -1,30 +1,41 @@
-Thu, 25 Aug 2022 20:27:15 +0200          -  Add changelog
+2022-09-05
 
-Thu, 25 Aug 2022 20:13:06 +0200          -  Add short howto on how to use mirror-registry and oc-mirror to make a local release image mirror for the installs
+* Use CoreOS instead of AlmaLinux for the utility node, and deploy haproxy as a container.
 
-Sun, 21 Aug 2022 22:40:29 +0200          -  Change domain tld to avoid collision with existing domain
+2022-09-01
 
-Sun, 21 Aug 2022 20:49:00 +0200          -  Provide examples for 3 master 3 worker deployment, as well as 3 masters only deployment
+* Provide more information on how to configure the KVM host, now using AlmaLinux 9.
 
-Tue, 16 Aug 2022 21:36:40 +0200          -  Update README to add forgotten node in MAC address table, so that it matches the tfvars content
+2022-08-28
 
-Tue, 16 Aug 2022 21:20:34 +0200          -  Add some variable validation.
+* Add HOWTO on how to get started with CEPH storage using rook in a cluster.
 
-Sun, 14 Aug 2022 17:13:59 +0200          -  Add some variable descriptions and defaults.
+2022-08-25
 
-Thu, 11 Aug 2022 14:11:24 +0200          -  Make primary disk size configurable by variable, and add support for adding extra disks to okd hosts
+* Add HOWTO on how to use mirror-registry and oc-mirror to make a local release image mirror for the installs.
 
-Sun, 7 Aug 2022 21:37:00 +0200           -  Move utility host to its own module and feed data to it from variables
+* Add CHANGELOG.
 
-Sun, 7 Aug 2022 20:52:17 +0200           -  Make vnc_address and network variables
+2022-08-21
 
-Sun, 7 Aug 2022 20:44:00 +0200           -  Move image filenames to variables file
+* Provide examples for 3 master 3 worker deployments, as well as 3 masters only deployment.
 
-Sun, 7 Aug 2022 20:37:34 +0200           -  Move libvirt uri to variable
+2022-08-16
 
-Sun, 7 Aug 2022 19:09:46 +0200           -  Simplify by using variables and modules in terraform manifests
+* Add some variable validation and update README.
 
-Sun, 27 Mar 2022 20:10:04 +0200          -  Remove encoding from write_files as content is not encoded anymore...
+2022-08-14
 
-Sun, 27 Mar 2022 16:07:29 +0200          -  Initial commit
+* Add some variable descriptions and defaults.
 
+2022-08-11
+
+* Make primary disk size configurable by variable, and add support for adding extra disks to OKD hosts.
+
+2022-08-07
+
+* Simplify by using variables and modules in terraform manifests.
+
+2022-03-27
+
+* First version.

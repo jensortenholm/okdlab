@@ -4,6 +4,10 @@ terraform {
     libvirt = {
       source = "dmacvicar/libvirt"
     }
+    ignition = {
+      source  = "community-terraform-providers/ignition"
+      version = "2.1.3"
+    }
   }
   experiments = [module_variable_optional_attrs]
 }
@@ -12,9 +16,12 @@ provider "libvirt" {
   uri = var.libvirt_uri
 }
 
-resource "libvirt_volume" "el" {
-  name   = "el"
-  source = var.el_image
+provider "ignition" {
+}
+
+resource "libvirt_volume" "coreos" {
+  name   = "coreos"
+  source = var.coreos_image
 }
 
 module "utility" {
@@ -22,8 +29,9 @@ module "utility" {
 
   for_each = var.utility_hosts
 
-  base_volume = libvirt_volume.el.id
-  user_data   = templatefile("${path.module}/cloud_init.cfg", {})
+  base_volume = libvirt_volume.coreos.id
+  haproxy_cfg = templatefile("${path.module}/haproxy.conf", {})
+  haproxy_svc = templatefile("${path.module}/haproxy.service", {})
   disk_size   = each.value.disk_size
   name        = each.key
   memory      = each.value.memory
@@ -31,11 +39,6 @@ module "utility" {
   vcpus       = each.value.vcpus
   network     = each.value.network
   mac         = each.value.mac
-}
-
-resource "libvirt_volume" "coreos" {
-  name   = "coreos"
-  source = var.coreos_image
 }
 
 locals {

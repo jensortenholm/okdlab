@@ -4,6 +4,10 @@ terraform {
     libvirt = {
       source = "dmacvicar/libvirt"
     }
+    ignition = {
+      source  = "community-terraform-providers/ignition"
+      version = "2.1.3"
+    }
   }
 }
 
@@ -13,10 +17,30 @@ resource "libvirt_volume" "disk" {
   size           = var.disk_size
 }
 
-resource "libvirt_cloudinit_disk" "cloudinit" {
-  name      = "cloudinit.iso"
-  user_data = var.user_data
-  pool      = "default"
+data "ignition_systemd_unit" "haproxy" {
+  name    = "haproxy.service"
+  content = var.haproxy_svc
+}
+
+data "ignition_file" "haproxy" {
+  path = "/etc/haproxy/haproxy.cfg"
+  content {
+    content = var.haproxy_cfg
+  }
+}
+
+data "ignition_config" "utility" {
+  systemd = [
+    data.ignition_systemd_unit.haproxy.rendered,
+  ]
+  files = [
+    data.ignition_file.haproxy.rendered,
+  ]
+}
+
+resource "libvirt_ignition" "utility" {
+  name    = "utility"
+  content = data.ignition_config.utility.rendered
 }
 
 resource "libvirt_domain" "host" {
@@ -24,9 +48,7 @@ resource "libvirt_domain" "host" {
   memory = var.memory
   vcpu   = var.vcpus
 
-  cloudinit = libvirt_cloudinit_disk.cloudinit.id
-
-  qemu_agent = true
+  coreos_ignition = libvirt_ignition.utility.id
 
   graphics {
     type           = "vnc"
@@ -37,7 +59,7 @@ resource "libvirt_domain" "host" {
   console {
     type        = "pty"
     target_port = "0"
-    target_type = "serial"
+    target_type = "virtio"
   }
 
   disk {

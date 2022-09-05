@@ -3,9 +3,14 @@ variable "base_volume" {
   description = "Terraform id of the libvirt_volume to use as a base for the primary disk (i.e. the EL cloud image)."
 }
 
-variable "user_data" {
+variable "haproxy_cfg" {
   type        = string
-  description = "Cloudinit user data used to initialize the host."
+  description = "HAProxy configuration to run on the host."
+}
+
+variable "haproxy_svc" {
+  type        = string
+  description = "HAProxy systemd service to execute the container."
 }
 
 variable "disk_size" {

@@ -1,0 +1,14 @@
+[Unit]
+Description=HAProxy Load Balancer
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/bin/podman kill haproxy
+ExecStartPre=-/bin/podman rm haproxy
+ExecStartPre=-/bin/podman pull docker.io/haproxy
+ExecStart=/bin/podman run --name haproxy -v /etc/haproxy:/usr/local/etc/haproxy:z --sysctl net.ipv4.ip_unprivileged_port_start=0 -p 22623:22623 -p 80:80 -p 6443:6443 -p 443:443 docker.io/haproxy
+
+[Install]
+WantedBy=multi-user.target

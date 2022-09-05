@@ -1,6 +1,5 @@
 libvirt_uri = "qemu+ssh://root@172.16.1.10/system"
 
-el_image     = "AlmaLinux-8-GenericCloud-8.6-20220718.x86_64.qcow2"
 coreos_image = "fedora-coreos-35.20220327.3.0-qemu.x86_64.qcow2"
 
 utility_hosts = {
