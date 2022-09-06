@@ -1,3 +1,7 @@
+2022-09-06
+
+* Generate haproxy configuration from tfvars data using a template instead of copying and editing sample files manually.
+
 2022-09-05
 
 * Use CoreOS instead of AlmaLinux for the utility node, and deploy haproxy as a container.

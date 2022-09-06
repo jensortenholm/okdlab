@@ -24,13 +24,18 @@ resource "libvirt_volume" "coreos" {
   source = var.coreos_image
 }
 
+locals {
+  ctlplane = [for k, v in var.okd_hosts : v.ip_address if contains(["master.ign", "bootstrap.ign"], v.ignition)]
+  compute = [for k, v in var.okd_hosts : v.ip_address if v.ignition == "worker.ign"]
+}
+
 module "utility" {
   source = "./modules/utility"
 
   for_each = var.utility_hosts
 
   base_volume = libvirt_volume.coreos.id
-  haproxy_cfg = templatefile("${path.module}/haproxy.conf", {})
+  haproxy_cfg = templatefile("${path.module}/haproxy.conf.tftpl", { ctlplane = local.ctlplane, compute = length(local.compute) > 0 ? local.compute : local.ctlplane })
   haproxy_svc = templatefile("${path.module}/haproxy.service", {})
   disk_size   = each.value.disk_size
   name        = each.key

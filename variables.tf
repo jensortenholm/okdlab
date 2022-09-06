@@ -14,6 +14,7 @@ variable "okd_hosts" {
     vcpus       = number
     memory      = number
     ignition    = string
+    ip_address  = string
     vnc_address = string
     network     = string
     disk_size   = number

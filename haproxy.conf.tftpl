@@ -38,10 +38,9 @@ frontend openshift-api-server
 backend openshift-api-server
     balance source
     mode tcp
-    server bootstrap 172.16.2.50:6443 check
-    server master1 172.16.2.51:6443 check
-    server master2 172.16.2.52:6443 check
-    server master3 172.16.2.53:6443 check
+%{ for srv in ctlplane ~}
+    server ctl${index(ctlplane, srv)} ${srv}:6443 check
+%{ endfor ~}
 
 frontend machine-config-server
     bind *:22623
@@ -52,10 +51,9 @@ frontend machine-config-server
 backend machine-config-server
     balance source
     mode tcp
-    server bootstrap 172.16.2.50:22623 check
-    server master1 172.16.2.51:22623 check
-    server master2 172.16.2.52:22623 check
-    server master3 172.16.2.53:22623 check
+%{ for srv in ctlplane ~}
+    server ctl${index(ctlplane, srv)} ${srv}:22623 check
+%{ endfor ~}
 
 frontend ingress-http
     bind *:80
@@ -66,8 +64,9 @@ frontend ingress-http
 backend ingress-http
     balance source
     mode tcp
-    server worker1 172.16.2.61:80 check
-    server worker2 172.16.2.62:80 check
+%{ for srv in compute ~}
+    server cpt${index(compute, srv)} ${srv}:80 check
+%{ endfor ~}
 
 frontend ingress-https
     bind *:443
@@ -78,5 +77,6 @@ frontend ingress-https
 backend ingress-https
     balance source
     mode tcp
-    server worker1 172.16.2.61:443 check
-    server worker2 172.16.2.62:443 check
+%{ for srv in compute ~}
+    server cpt${index(compute, srv)} ${srv}:443 check
+%{ endfor ~}
