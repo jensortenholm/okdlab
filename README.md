@@ -106,7 +106,7 @@ OKD needs forward and reverse name resolution for all the nodes and some special
 
 ### Download client, installer and images
 
-Download the okd client and installer from: https://github.com/openshift/okd/releases. You will need the openshift-install package for
+Download the okd client and installer from: https://github.com/okd-project/okd/releases. You will need the openshift-install package for
 the very release that you intend to install, but it is of course possible to update the cluster to newer releases once the install
 is done.
 
