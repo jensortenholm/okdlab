@@ -1,3 +1,7 @@
+2022-10-04
+
+* Add HOWTO on how to get started with GitOps using ArgoCD.
+
 2022-09-06
 
 * Generate haproxy configuration from tfvars data using a template instead of copying and editing sample files manually.
