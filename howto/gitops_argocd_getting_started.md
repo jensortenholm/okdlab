@@ -520,7 +520,7 @@ First, deploy the SealedSecret keys resource into the cluster:
 
 Then run kustomize with oc to bootstrap the cluster:
 
-    until kustomize build --enable-helm bootstrap/overlays/default | oc apply -f - ; do sleep 1; done
+    until kustomize build --enable-helm bootstrap/ | oc apply -f - ; do sleep 1; done
 
 The bootstrapping is run in a loop which essentially repeats the kustomize build / oc apply command until it returns
 without error. This needs to be done because some resources are CRDs, which are not available in the cluster before
