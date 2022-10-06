@@ -508,6 +508,10 @@ config/selfmanage/kustomization.yaml:
     bases:
     - ../../bootstrap/
 
+## Example reference
+
+An example of the resulting git repository can be seen at https://github.com/jensortenholm/argoexample
+
 ## Bootstrapping the cluster
 
 Now, with the git repository prepared, and a freshly installed cluster waiting to be configured, we use the kustomize tool
