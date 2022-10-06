@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.1"
+  required_version = ">= 1.3"
   required_providers {
     libvirt = {
       source = "dmacvicar/libvirt"
@@ -9,7 +9,6 @@ terraform {
       version = "2.1.3"
     }
   }
-  experiments = [module_variable_optional_attrs]
 }
 
 provider "libvirt" {
