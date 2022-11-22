@@ -19,22 +19,64 @@ resource "libvirt_volume" "disk" {
 
 data "ignition_systemd_unit" "haproxy" {
   name    = "haproxy.service"
-  content = var.haproxy_svc
+  content = templatefile("${path.module}/haproxy.service", {})
 }
 
 data "ignition_file" "haproxy" {
   path = "/etc/haproxy/haproxy.cfg"
   content {
-    content = var.haproxy_cfg
+    // If no compute IPs are specified, this is a cluster with only masters, so use master IPs for workload purposes as well.
+    content = templatefile("${path.module}/haproxy.conf.tftpl", { ctlplane = var.ctlplane_ips, compute = length(var.compute_ips) > 0 ? var.compute_ips : var.ctlplane_ips })
+  }
+}
+
+data "ignition_systemd_unit" "dnsmasq" {
+  count   = var.dnsmasq ? 1 : 0
+  name    = "dnsmasq.service"
+  content = templatefile("${path.module}/dnsmasq.service", {})
+}
+
+data "ignition_file" "dnsmasq" {
+  count   = var.dnsmasq ? 1 : 0
+  path    = "/etc/dnsmasq.d/dnsmasq.conf"
+  content {
+    content = templatefile("${path.module}/dnsmasq.conf.tftpl",
+      { domainname         = var.domainname,
+        ip_address         = var.ip_address,
+        forward_dns        = var.forward_dns,
+        network_ip         = var.network_ip,
+        gateway_ip         = var.gateway_ip
+        reverse_ip_address = join(".", reverse(regex("^(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)$", var.ip_address))),
+        all_hosts          = var.all_hosts
+      }
+    )
+  }
+}
+
+data "ignition_file" "network" {
+  count   = var.dnsmasq ? 1 : 0
+  path    = "/etc/NetworkManager/system-connections/ens3.nmconnection"
+  mode    = 384
+  content {
+    content = templatefile("${path.module}/nmconnection.tftpl",
+      { ip_address  = var.ip_address,
+        gateway_ip  = var.gateway_ip,
+        hostname    = var.name,
+        forward_dns = var.forward_dns
+      }
+    )
   }
 }
 
 data "ignition_config" "utility" {
   systemd = [
     data.ignition_systemd_unit.haproxy.rendered,
+    var.dnsmasq ? data.ignition_systemd_unit.dnsmasq[0].rendered : ""
   ]
   files = [
+    var.dnsmasq ? data.ignition_file.network[0].rendered : "",
     data.ignition_file.haproxy.rendered,
+    var.dnsmasq ? data.ignition_file.dnsmasq[0].rendered : ""
   ]
 }
 
@@ -49,6 +91,10 @@ resource "libvirt_domain" "host" {
   vcpu   = var.vcpus
 
   coreos_ignition = libvirt_ignition.utility.id
+  
+  cpu {
+    mode = "host-passthrough"
+  }
 
   graphics {
     type           = "vnc"

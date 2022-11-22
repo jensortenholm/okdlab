@@ -8,6 +8,12 @@ variable "coreos_image" {
   description = "Filename of the QCOW2 CoreOS image to use. Correct image to use needs to be extracted from openshift-install, see README.md."
 }
 
+variable "domainname" {
+  type        = string
+  description = "Cluster domainname, for example clustername.mydomain.tld."
+  default     = ""
+}
+
 variable "okd_hosts" {
   type = map(object({
     mac         = string
@@ -28,9 +34,14 @@ variable "utility_hosts" {
     mac         = string
     vcpus       = number
     memory      = number
+    dnsmasq     = optional(bool, false)
     vnc_address = string
     network     = string
     disk_size   = number
+    ip_address  = optional(string)
+    network_ip  = optional(string)
+    gateway_ip  = optional(string)
+    forward_dns = optional(string, "8.8.8.8")
   }))
   description = "Map of utility hosts to create. Only one host is needed, leave this variable empty if no utility host is to be created. Key is used as servername, value is another map with host configuration parameters."
   default     = {}

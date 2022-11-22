@@ -26,6 +26,7 @@ resource "libvirt_volume" "coreos" {
 locals {
   ctlplane = [for k, v in var.okd_hosts : v.ip_address if contains(["master.ign", "bootstrap.ign"], v.ignition)]
   compute = [for k, v in var.okd_hosts : v.ip_address if v.ignition == "worker.ign"]
+  all_hosts = {for k, v in var.okd_hosts : k => {ip = v.ip_address, mac = v.mac}}
 }
 
 module "utility" {
@@ -33,16 +34,23 @@ module "utility" {
 
   for_each = var.utility_hosts
 
-  base_volume = libvirt_volume.coreos.id
-  haproxy_cfg = templatefile("${path.module}/haproxy.conf.tftpl", { ctlplane = local.ctlplane, compute = length(local.compute) > 0 ? local.compute : local.ctlplane })
-  haproxy_svc = templatefile("${path.module}/haproxy.service", {})
-  disk_size   = each.value.disk_size
-  name        = each.key
-  memory      = each.value.memory
-  vnc_address = each.value.vnc_address
-  vcpus       = each.value.vcpus
-  network     = each.value.network
-  mac         = each.value.mac
+  base_volume  = libvirt_volume.coreos.id
+  ctlplane_ips = local.ctlplane
+  compute_ips  = local.compute
+  all_hosts    = local.all_hosts
+  domainname   = var.domainname
+  ip_address   = each.value.ip_address
+  forward_dns  = each.value.forward_dns
+  network_ip   = each.value.network_ip
+  gateway_ip   = each.value.gateway_ip
+  dnsmasq      = each.value.dnsmasq
+  disk_size    = each.value.disk_size
+  name         = each.key
+  memory       = each.value.memory
+  vnc_address  = each.value.vnc_address
+  vcpus        = each.value.vcpus
+  network      = each.value.network
+  mac          = each.value.mac
 }
 
 locals {

@@ -3,14 +3,10 @@ variable "base_volume" {
   description = "Terraform id of the libvirt_volume to use as a base for the primary disk (i.e. the EL cloud image)."
 }
 
-variable "haproxy_cfg" {
-  type        = string
-  description = "HAProxy configuration to run on the host."
-}
-
-variable "haproxy_svc" {
-  type        = string
-  description = "HAProxy systemd service to execute the container."
+variable "dnsmasq" {
+  type        = bool
+  description = "Set this to enable dnsmasq container in the utility host."
+  default     = false  
 }
 
 variable "disk_size" {
@@ -66,4 +62,50 @@ variable "mac" {
 variable "vnc_address" {
   type        = string
   description = "IP address used for the KVM VNC console to listen. Usually the KVM hosts management IP."
+}
+
+variable "network_ip" {
+  type        = string
+  description = "Network IP for the subnet to serve DHCP on. Only used if dnsmasq is activated."
+  default     = ""
+}
+
+variable "gateway_ip" {
+  type        = string
+  description = "Network gateway IP (default route). Only used if dnsmasq is activated."
+  default     = ""
+}
+
+variable "forward_dns" {
+  type        = string
+  description = "DNS forward server. Only used if dnsmasq is activated."
+  default     = ""
+}
+
+variable "ctlplane_ips" {
+  type        = list
+  description = "List of all controlplane node IP addresses."
+}
+
+variable "compute_ips" {
+  type        = list
+  description = "List of all compute node IP addresses."
+}
+
+variable "all_hosts" {
+  type        = map(object({
+    ip  = string
+    mac = string
+  }))
+  description = "Map of all hosts with hostnames as keys and an object with ip and mac as values. Only used if dnsmasq is activated."
+}
+
+variable "domainname" {
+  type        = string
+  description = "The domainname. Only used if dnsmasq is activated."
+}
+
+variable "ip_address" {
+  type        = string
+  description = "The utility host IP address. Only used if dnsmasq is activated."
 }

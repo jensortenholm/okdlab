@@ -1,0 +1,108 @@
+libvirt_uri = "qemu+ssh://root@172.16.1.10/system"
+
+coreos_image = "fedora-coreos-35.20220327.3.0-qemu.x86_64.qcow2"
+
+domainname = "okd4.staticlab.tld"
+
+utility_hosts = {
+  stcutility = {
+    mac         = "12:22:34:44:55:30"
+    vcpus       = 2
+    memory      = 4096
+    dnsmasq     = true
+    ip_address  = "172.16.3.30"
+    vnc_address = "172.16.1.10"
+    disk_size   = 21474836480
+    network     = "staticnet"
+    network_ip  = "172.16.3.0"
+    gateway_ip  = "172.16.3.254"
+  }
+}
+
+okd_hosts = {
+  stcbootstrap = {
+    mac         = "12:22:34:44:55:00"
+    vcpus       = 4
+    memory      = 16384
+    ignition    = "bootstrap.ign"
+    ip_address  = "172.16.3.40"
+    vnc_address = "172.16.1.10"
+    network     = "staticnet"
+    disk_size   = 107374182400
+  }
+
+  stcmaster1 = {
+    mac         = "12:22:34:44:55:01"
+    vcpus       = 4
+    memory      = 16384
+    ignition    = "master.ign"
+    ip_address  = "172.16.3.41"
+    vnc_address = "172.16.1.10"
+    network     = "staticnet"
+    disk_size   = 107374182400
+  }
+
+  stcmaster2 = {
+    mac         = "12:22:34:44:55:02"
+    vcpus       = 4
+    memory      = 16384
+    ignition    = "master.ign"
+    ip_address  = "172.16.3.42"
+    vnc_address = "172.16.1.10"
+    network     = "staticnet"
+    disk_size   = 107374182400
+  }
+
+  stcmaster3 = {
+    mac         = "12:22:34:44:55:03"
+    vcpus       = 4
+    memory      = 16384
+    ignition    = "master.ign"
+    ip_address  = "172.16.3.43"
+    vnc_address = "172.16.1.10"
+    network     = "staticnet"
+    disk_size   = 107374182400
+  }
+
+  stcworker1 = {
+    mac         = "12:22:34:44:55:11"
+    vcpus       = 4
+    memory      = 16384
+    ignition    = "worker.ign"
+    ip_address  = "172.16.3.51"
+    vnc_address = "172.16.1.10"
+    network     = "staticnet"
+    disk_size   = 107374182400
+    extra_disks = {
+      "extra-0" = 214748364800
+    }
+  }
+
+  stcworker2 = {
+    mac         = "12:22:34:44:55:12"
+    vcpus       = 4
+    memory      = 16384
+    ignition    = "worker.ign"
+    ip_address  = "172.16.3.52"
+    vnc_address = "172.16.1.10"
+    network     = "staticnet"
+    disk_size   = 107374182400
+    extra_disks = {
+      "extra-0" = 214748364800
+    }
+  }
+
+  stcworker3 = {
+    mac         = "12:22:34:44:55:13"
+    vcpus       = 4
+    memory      = 16384
+    ignition    = "worker.ign"
+    ip_address  = "172.16.3.53"
+    vnc_address = "172.16.1.10"
+    network     = "staticnet"
+    disk_size   = 107374182400
+    extra_disks = {
+      "extra-0" = 214748364800
+    }
+  }
+}

@@ -1,0 +1,14 @@
+[Unit]
+Description=dnsmasq
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/bin/podman kill dnsmasq
+ExecStartPre=-/bin/podman rm dnsmasq
+ExecStartPre=-/bin/podman pull quay.io/jensortenholm/dnsmasq:latest
+ExecStart=/bin/podman run --name dnsmasq -v /etc/dnsmasq.d:/etc/dnsmasq.d:z --net host --cap-add NET_ADMIN --cap-add NET_RAW quay.io/jensortenholm/dnsmasq:latest
+
+[Install]
+WantedBy=multi-user.target

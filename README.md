@@ -11,9 +11,6 @@ I have tested this method of setting up OKD with versions 4.9, 4.10 as well as 4
 In my homelab I have one server running AlmaLinux 9, with KVM installed. It is connected to my lab network using 2 VLANs, one which I use
 for management access of the KVM host itself, and the other is used for the VMs.
 
-My router/firewall serves DHCP and DNS to all my networks, so the necessary customizations of these services for OKD is not included
-in this setup, but can be easily added with a dnsmasq configuration on the utility node if needed.
-
 The KVM host is based on a minimal install of AlmaLinux 9. The first network interface on the server is configured with the management
 VLAN untagged, so the installation picks up its IP address with the default DHCP configuration.
 
@@ -66,15 +63,15 @@ Configure the storage pool:
 
 ## Preparing the environment for OKD
 
-The VMs used consists of one utility server running haproxy loadbalancer, one OKD bootstrap which can be removed once the installation is
-done, three OKD master nodes, and three OKD worker nodes. All VMs are installed and configured using terraform (see main.tf).
+The VMs used consists of one utility server running haproxy loadbalancer and optionally dnsmasq, one OKD bootstrap which can be removed once 
+the installation is complete, three OKD master nodes, and three OKD worker nodes. All VMs are installed and configured using terraform (see main.tf).
 
 It is also possible to setup a cluster with only three OKD nodes that act simultaneously as masters and workers, which can be a great option
 for a homelab with limited hardware resources.
 
 ### DHCP
 
-Static dhcp leases are added to the DHCP server for the necessary VMs. I've used custom MAC addresses on the VMs to make this easier and
+Persistent dhcp leases are added to the DHCP server for the necessary VMs. I've used custom MAC addresses on the VMs to make this easier and
 more predictable. For example, for a full setup of 3 masters and 3 workers:
 
 ------------------------------------------------
@@ -160,15 +157,16 @@ Copy the .ign files to the directory where you plan to run terraform from.
 
 ### Edit variables
 
-Again, this repository contains two example variable files, one for a three master, three worker node setup (terraform-3workers.yaml) and also
-one for a three masters only setup (terraform-onlymasters.yaml).
+Again, this repository contains example variable files, one for a three master, three worker node setup (terraform-3workers.yaml), one for 
+a three masters only setup (terraform-onlymasters.yaml) and one for a three master, three worker node setup where the utility node has dnsmasq
+added to provide DNS and DHCP services for the cluster network (terraform-3workers-dnsmasq.yaml).
 
 Copy the file you want to terraform.tfvars and customimze it to your needs, at the very least:
 
 * The libvirt provider URI, to point at your KVM host.
 * Update image filenames to what you downloaded.
 * Change any IP or MAC addresses that might be different in your environment.
-* Change the network name from "newlabnet" to whatever your network is named in KVM.
+* Change the network name to whatever your network is named in KVM.
 
 ## Install
 

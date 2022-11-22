@@ -1,3 +1,7 @@
+2022-11-22
+
+* Add support for configuring utility host with dnsmasq for providing DHCP and DNS services on the cluster network.
+
 2022-10-04
 
 * Add HOWTO on how to get started with GitOps using ArgoCD.

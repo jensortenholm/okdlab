@@ -1,0 +1,19 @@
+listen-address=${ip_address},127.0.0.1
+expand-hosts
+domain=${domainname}
+server=${forward_dns}
+dhcp-authoritative
+dhcp-range=${network_ip},static
+dhcp-option=option:dns-server,${ip_address}
+dhcp-option=option:router,${gateway_ip}
+%{ for k, v in all_hosts ~}
+dhcp-host=${v.mac},${v.ip},${k}
+%{ endfor ~}
+%{ for k, v in all_hosts ~}
+host-record=${k}.${domainname},${v.ip}
+%{ endfor ~}
+address=/apps.${domainname}/${ip_address}
+address=/api.${domainname}/${ip_address}
+address=/api-int.${domainname}/${ip_address}
+ptr-record=${reverse_ip_address}.in-addr.arpa,api.${domainname}
+ptr-record=${reverse_ip_address}.in-addr.arpa,api-int.${domainname}
