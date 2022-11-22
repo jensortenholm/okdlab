@@ -27,6 +27,10 @@ resource "libvirt_domain" "host" {
 
   coreos_ignition = var.ignition_id
 
+  cpu {
+    mode = "host-passthrough"
+  }
+
   graphics {
     type           = "vnc"
     listen_type    = "address"
