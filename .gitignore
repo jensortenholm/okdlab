@@ -1,0 +1,7 @@
+*.qcow2
+*.qcow2.xz
+*.ign
+.terraform*
+*.tfstate*
+.openshift*
+.vscode/
