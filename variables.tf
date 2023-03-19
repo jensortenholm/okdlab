@@ -31,17 +31,20 @@ variable "okd_hosts" {
 
 variable "utility_hosts" {
   type = map(object({
-    mac         = string
-    vcpus       = number
-    memory      = number
-    dnsmasq     = optional(bool, false)
-    vnc_address = string
-    network     = string
-    disk_size   = number
-    ip_address  = optional(string)
-    network_ip  = optional(string)
-    gateway_ip  = optional(string)
-    forward_dns = optional(string, "8.8.8.8")
+    mac           = string
+    vcpus         = number
+    memory        = number
+    dnsmasq       = optional(bool, false)
+    vnc_address   = string
+    network       = string
+    disk_size     = number
+    ip_address    = optional(string)
+    network_ip    = optional(string)
+    gateway_ip    = optional(string)
+    forward_dns   = optional(string, "8.8.8.8")
+    haproxy_image = optional(string)
+    dnsmasq_image = optional(string)
+    ssh_key       = string
   }))
   description = "Map of utility hosts to create. Only one host is needed, leave this variable empty if no utility host is to be created. Key is used as servername, value is another map with host configuration parameters."
   default     = {}

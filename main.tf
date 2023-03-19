@@ -34,23 +34,26 @@ module "utility" {
 
   for_each = var.utility_hosts
 
-  base_volume  = libvirt_volume.coreos.id
-  ctlplane_ips = local.ctlplane
-  compute_ips  = local.compute
-  all_hosts    = local.all_hosts
-  domainname   = var.domainname
-  ip_address   = each.value.ip_address
-  forward_dns  = each.value.forward_dns
-  network_ip   = each.value.network_ip
-  gateway_ip   = each.value.gateway_ip
-  dnsmasq      = each.value.dnsmasq
-  disk_size    = each.value.disk_size
-  name         = each.key
-  memory       = each.value.memory
-  vnc_address  = each.value.vnc_address
-  vcpus        = each.value.vcpus
-  network      = each.value.network
-  mac          = each.value.mac
+  base_volume   = libvirt_volume.coreos.id
+  ctlplane_ips  = local.ctlplane
+  compute_ips   = local.compute
+  all_hosts     = local.all_hosts
+  domainname    = var.domainname
+  ip_address    = each.value.ip_address
+  forward_dns   = each.value.forward_dns
+  network_ip    = each.value.network_ip
+  gateway_ip    = each.value.gateway_ip
+  dnsmasq       = each.value.dnsmasq
+  disk_size     = each.value.disk_size
+  name          = each.key
+  memory        = each.value.memory
+  vnc_address   = each.value.vnc_address
+  vcpus         = each.value.vcpus
+  network       = each.value.network
+  mac           = each.value.mac
+  haproxy_image = each.value.haproxy_image
+  dnsmasq_image = each.value.dnsmasq_image
+  ssh_key       = each.value.ssh_key
 }
 
 locals {

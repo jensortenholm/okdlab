@@ -9,6 +9,23 @@ variable "dnsmasq" {
   default     = false  
 }
 
+variable "haproxy_image" {
+  type        = string
+  description = "HAProxy image to use"
+  default     = "docker.io/haproxy"
+}
+
+variable "dnsmasq_image" {
+  type        = string
+  description = "DNSMasq image to use"
+  default     = "quay.io/jensortenholm/dnsmasq:latest"
+}
+
+variable "ssh_key" {
+  type        = string
+  description = "Public SSH key for the admin user"
+}
+
 variable "disk_size" {
   type        = number
   description = "Size of the primary disk in bytes."

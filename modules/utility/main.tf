@@ -19,7 +19,7 @@ resource "libvirt_volume" "disk" {
 
 data "ignition_systemd_unit" "haproxy" {
   name    = "haproxy.service"
-  content = templatefile("${path.module}/haproxy.service", {})
+  content = templatefile("${path.module}/haproxy.service", { haproxy_image = var.haproxy_image })
 }
 
 data "ignition_file" "haproxy" {
@@ -33,7 +33,7 @@ data "ignition_file" "haproxy" {
 data "ignition_systemd_unit" "dnsmasq" {
   count   = var.dnsmasq ? 1 : 0
   name    = "dnsmasq.service"
-  content = templatefile("${path.module}/dnsmasq.service", {})
+  content = templatefile("${path.module}/dnsmasq.service", { dnsmasq_image = var.dnsmasq_image })
 }
 
 data "ignition_file" "dnsmasq" {
@@ -68,6 +68,22 @@ data "ignition_file" "network" {
   }
 }
 
+data "ignition_file" "sudoers" {
+  path = "/etc/sudoers.d/90-admin-user"
+  mode = 384
+  content {
+    content = "admin ALL=(ALL) NOPASSWD:ALL"
+  }
+}
+
+data "ignition_user" "user" {
+  name                = "admin"
+  home_dir            = "/home/admin"
+  shell               = "/bin/bash"
+  groups              = ["wheel"]
+  ssh_authorized_keys = [var.ssh_key]
+}
+
 data "ignition_config" "utility" {
   systemd = [
     data.ignition_systemd_unit.haproxy.rendered,
@@ -76,7 +92,11 @@ data "ignition_config" "utility" {
   files = [
     var.dnsmasq ? data.ignition_file.network[0].rendered : "",
     data.ignition_file.haproxy.rendered,
+    data.ignition_file.sudoers.rendered,
     var.dnsmasq ? data.ignition_file.dnsmasq[0].rendered : ""
+  ]
+  users = [
+    data.ignition_user.user.rendered,
   ]
 }
 
