@@ -1,3 +1,8 @@
+2023-03-19
+
+* Add support for overriding dnsmasq and haproxy container images on utility host.
+* Add admin user on utility host, with sudo privileges and authentication configured with ssh public key.
+
 2022-11-22
 
 * Add support for configuring utility host with dnsmasq for providing DHCP and DNS services on the cluster network.
