@@ -89,7 +89,7 @@ The VMs used consists of one utility server running haproxy loadbalancer and opt
 the installation is complete, three OKD master nodes, and three OKD worker nodes. All VMs are installed and configured using terraform (see main.tf).
 
 It is also possible to setup a cluster with only three OKD nodes that act simultaneously as masters and workers, which can be a great option
-for a homelab with limited hardware resources.
+for a homelab with limited hardware resources. Also, it is possible to run a single node cluster for some use cases.
 
 ### DHCP
 
@@ -157,8 +157,8 @@ The terraform manifests use a libvirt driver, which needs passwordless ssh to ro
 
 Once you have created this file, you'll likely want to make a backup of it elsewhere. The OKD installer deletes the file when it's done with it...
 
-The repository contains two example files. One for a setup with three master nodes and three worker nodes (install-config-3masters-3workers.yaml),
-and also one for a setup with only three master nodes (install-config-only3masters.yaml).
+The repository contains several example files. One for a setup with three master nodes and three worker nodes (install-config-3masters-3workers.yaml),
+one for a setup with only three master nodes (install-config-only3masters.yaml) and one for a single node setup (install-config-singlenode.yaml).
 
 Copy one of the template files to the name install-config.yaml, and customize it to your needs (see OKD documentation).
 
@@ -180,8 +180,8 @@ Copy the .ign files to the directory where you plan to run terraform from.
 ### Edit variables
 
 Again, this repository contains example variable files, one for a three master, three worker node setup (terraform-3workers.yaml), one for 
-a three masters only setup (terraform-onlymasters.yaml) and one for a three master, three worker node setup where the utility node has dnsmasq
-added to provide DNS and DHCP services for the cluster network (terraform-3workers-dnsmasq.yaml).
+a three masters only setup (terraform-onlymasters.yaml), one for a singlenode setup (terraform-singlenode.yaml) and one for a three master,
+three worker node setup where the utility node has dnsmasq added to provide DNS and DHCP services for the cluster network (terraform-3workers-dnsmasq.yaml).
 
 Copy the file you want to terraform.tfvars and customimze it to your needs, at the very least:
 
