@@ -1,3 +1,8 @@
+2023-03-20
+
+* Add example files for setting up OKD as a singlenode cluster.
+* Update previous terraform example files with the new, required ssh_key variable for utility nodes.
+
 2023-03-19
 
 * Add support for overriding dnsmasq and haproxy container images on utility host.
