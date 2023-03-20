@@ -10,6 +10,7 @@ utility_hosts = {
     vnc_address = "172.16.1.10"
     disk_size   = 21474836480
     network     = "newlabnet"
+    ssh_key     = "<enter ssh public key here>"
   }
 }
 

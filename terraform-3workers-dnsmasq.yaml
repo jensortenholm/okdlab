@@ -16,6 +16,7 @@ utility_hosts = {
     network     = "staticnet"
     network_ip  = "172.16.3.0"
     gateway_ip  = "172.16.3.254"
+    ssh_key     = "<enter ssh public key here>"
   }
 }
 
