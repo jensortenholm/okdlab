@@ -54,6 +54,10 @@ module "utility" {
   haproxy_image = each.value.haproxy_image
   dnsmasq_image = each.value.dnsmasq_image
   ssh_key       = each.value.ssh_key
+  auth          = each.value.auth
+  registry_name = each.value.registry_name
+  registry_user = each.value.registry_user
+  registry_pwd  = each.value.registry_pwd
 }
 
 locals {

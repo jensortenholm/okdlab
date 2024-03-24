@@ -84,6 +84,21 @@ data "ignition_user" "user" {
   ssh_authorized_keys = [var.ssh_key]
 }
 
+data "ignition_file" "auth" {
+  count = var.auth ? 1 : 0
+  path  = "/root/.config/containers/auth.json"
+  mode  = 384
+  content {
+    content = templatefile("${path.module}/auth.json.tftpl",
+      {
+        registry_name = var.registry_name,
+        registry_user = var.registry_user,
+        registry_pwd  = var.registry_pwd
+      }
+    )
+  }
+}
+
 data "ignition_config" "utility" {
   systemd = [
     data.ignition_systemd_unit.haproxy.rendered,
@@ -93,7 +108,8 @@ data "ignition_config" "utility" {
     var.dnsmasq ? data.ignition_file.network[0].rendered : "",
     data.ignition_file.haproxy.rendered,
     data.ignition_file.sudoers.rendered,
-    var.dnsmasq ? data.ignition_file.dnsmasq[0].rendered : ""
+    var.dnsmasq ? data.ignition_file.dnsmasq[0].rendered : "",
+    var.auth ? data.ignition_file.auth[0].rendered : "",
   ]
   users = [
     data.ignition_user.user.rendered,

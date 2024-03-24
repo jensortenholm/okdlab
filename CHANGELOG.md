@@ -1,3 +1,7 @@
+2024-03-24
+
+* Add support for configuring registry credentials on the utility machine, to allow its container images to be pulled from a private registry.
+
 2023-03-20
 
 * Add example files for setting up OKD as a singlenode cluster.

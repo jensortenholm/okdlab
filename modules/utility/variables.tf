@@ -126,3 +126,27 @@ variable "ip_address" {
   type        = string
   description = "The utility host IP address. Only used if dnsmasq is activated."
 }
+
+variable "registry_name" {
+  type        = string
+  description = "The container registry URL to add credentials for"
+  default     = ""
+}
+
+variable "registry_user" {
+  type        = string
+  description = "The username used to authenticate to the registry"
+  default     = ""
+}
+
+variable "registry_pwd" {
+  type        = string
+  description = "The password used to authenticate to the registry"
+  default     = ""
+}
+
+variable "auth" {
+  type        = bool
+  description = "Set this to enable auth.json creation to provide credentials when pulling haproxy and dnsmasq images."
+  default     = false  
+}

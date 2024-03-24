@@ -220,9 +220,9 @@ Scan for "Pending" certificates. Then:
 
     oc adm certificate approve <csr-name>
 
-Or, all of them in one go:
+Or, all of them in one go (pending CSRs have an empty status section):
 
-    oc get csr | grep Pending | awk '{print $1}' | xargs -n1 oc adm certificate approve
+    oc get csr -o go-template='{{range .items}}{{if not .status}}{{print .metadata.name " "}}{{end}}{{end}}' | xargs -r oc adm certificate approve
 
 To uninstall the cluster:
 

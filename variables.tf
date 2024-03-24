@@ -45,6 +45,10 @@ variable "utility_hosts" {
     haproxy_image = optional(string)
     dnsmasq_image = optional(string)
     ssh_key       = string
+    auth          = optional(bool, false)
+    registry_name = optional(string)
+    registry_user = optional(string)
+    registry_pwd  = optional(string)
   }))
   description = "Map of utility hosts to create. Only one host is needed, leave this variable empty if no utility host is to be created. Key is used as servername, value is another map with host configuration parameters."
   default     = {}
