@@ -1,10 +1,10 @@
-# Installing OKD 4.12 on KVM using Terraform
+# Installing OKD 4.15 on KVM using Terraform
 
 ## Introduction
 
 This is by no means a polished and secured setup, but rather a quick and dirty solution to spin up OKD clusters in my homelab.
 
-I have tested this method of setting up OKD with versions 4.9, 4.10, 4.11 as well as 4.12.
+I have tested this method of setting up OKD with versions 4.9 - 4.15.
 
 ### Note on 4.12 and mirror-registry
 
