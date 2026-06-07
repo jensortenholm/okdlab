@@ -2,7 +2,8 @@ terraform {
   required_version = ">= 1.3"
   required_providers {
     libvirt = {
-      source = "dmacvicar/libvirt"
+      source  = "dmacvicar/libvirt"
+      version = "~> 0.9.7"
     }
     ignition = {
       source  = "community-terraform-providers/ignition"
@@ -20,7 +21,22 @@ provider "ignition" {
 
 resource "libvirt_volume" "coreos" {
   name   = "coreos"
-  source = var.coreos_image
+  pool   = "images"
+  create = {
+    content = {
+      url = var.coreos_image
+    }
+  }
+}
+
+resource "libvirt_volume" "utility_coreos" {
+  name   = "utility_coreos"
+  pool   = "images"
+  create = {
+    content = {
+      url = var.utility_coreos_image
+    }
+  }
 }
 
 locals {
@@ -34,30 +50,32 @@ module "utility" {
 
   for_each = var.utility_hosts
 
-  base_volume   = libvirt_volume.coreos.id
-  ctlplane_ips  = local.ctlplane
-  compute_ips   = local.compute
-  all_hosts     = local.all_hosts
-  domainname    = var.domainname
-  ip_address    = each.value.ip_address
-  forward_dns   = each.value.forward_dns
-  network_ip    = each.value.network_ip
-  gateway_ip    = each.value.gateway_ip
-  dnsmasq       = each.value.dnsmasq
-  disk_size     = each.value.disk_size
-  name          = each.key
-  memory        = each.value.memory
-  vnc_address   = each.value.vnc_address
-  vcpus         = each.value.vcpus
-  network       = each.value.network
-  mac           = each.value.mac
-  haproxy_image = each.value.haproxy_image
-  dnsmasq_image = each.value.dnsmasq_image
-  ssh_key       = each.value.ssh_key
-  auth          = each.value.auth
-  registry_name = each.value.registry_name
-  registry_user = each.value.registry_user
-  registry_pwd  = each.value.registry_pwd
+  base_volume_path   = libvirt_volume.utility_coreos.path
+  ctlplane_ips       = local.ctlplane
+  compute_ips        = local.compute
+  all_hosts          = local.all_hosts
+  domainname         = var.domainname
+  ip_address         = each.value.ip_address
+  forward_dns        = each.value.forward_dns
+  network_ip         = each.value.network_ip
+  gateway_ip         = each.value.gateway_ip
+  dnsmasq            = each.value.dnsmasq
+  disk_size          = each.value.disk_size
+  name               = each.key
+  memory             = each.value.memory
+  vnc_address        = each.value.vnc_address
+  vcpus              = each.value.vcpus
+  network            = each.value.network
+  mac                = each.value.mac
+  haproxy_image      = each.value.haproxy_image
+  dnsmasq_image      = each.value.dnsmasq_image
+  ssh_key            = each.value.ssh_key
+  auth               = each.value.auth
+  registry_name      = each.value.registry_name
+  registry_user      = each.value.registry_user
+  registry_pwd       = each.value.registry_pwd
+  kvm_host_ip        = var.kvm_host_ip
+  ssh_private_key    = var.ssh_private_key
 }
 
 locals {
@@ -67,8 +85,8 @@ locals {
 resource "libvirt_ignition" "ignition" {
   for_each = local.unique_ignitions
 
-  name    = each.value
-  content = each.value
+  name    = each.key
+  content = file(each.value)
 }
 
 module "okdhosts" {
@@ -76,14 +94,16 @@ module "okdhosts" {
 
   for_each = var.okd_hosts
 
-  base_volume = libvirt_volume.coreos.id
-  ignition_id = libvirt_ignition.ignition[each.value.ignition].id
-  name        = each.key
-  memory      = each.value.memory
-  vcpus       = each.value.vcpus
-  vnc_address = each.value.vnc_address
-  network     = each.value.network
-  mac         = each.value.mac
-  disk_size   = each.value.disk_size
-  extra_disks = each.value.extra_disks
+  base_volume_path = libvirt_volume.coreos.path
+  ignition_path    = libvirt_ignition.ignition[each.value.ignition].path
+  name             = each.key
+  memory           = each.value.memory
+  vcpus            = each.value.vcpus
+  vnc_address      = each.value.vnc_address
+  network          = each.value.network
+  mac              = each.value.mac
+  disk_size        = each.value.disk_size
+  extra_disks      = each.value.extra_disks
+  kvm_host_ip      = var.kvm_host_ip
+  ssh_private_key  = var.ssh_private_key
 }

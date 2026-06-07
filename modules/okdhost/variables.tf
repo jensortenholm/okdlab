@@ -1,11 +1,11 @@
-variable "base_volume" {
+variable "base_volume_path" {
   type        = string
-  description = "Terraform id of the libvirt_volume to use as a base for the primary disk (i.e. the CoreOS image)."
+  description = "Path of the libvirt_volume to use as a base for the primary disk (i.e. the CoreOS image)."
 }
 
-variable "ignition_id" {
+variable "ignition_path" {
   type        = string
-  description = "Terraform id of the libvirt_ignition used to initialize this particular host."
+  description = "Path to the ignition file used to initialize this particular host. The file will be uploaded to the KVM host."
 }
 
 variable "disk_size" {
@@ -66,4 +66,14 @@ variable "mac" {
 variable "extra_disks" {
   type        = map(number)
   description = "Map of extra disks to attach to the host. Key is used as diskname, and the value is the size of the disk in bytes."
+}
+
+variable "kvm_host_ip" {
+  type        = string
+  description = "The IP address of the KVM host, to facilitate uploading of ignition file which needs to be accessed locally"
+}
+
+variable "ssh_private_key" {
+  type        = string
+  description = "Path to the SSH private key file used to SSH into the KVM host as root, to facilitate uploading of ignition file which needs to be accessed locally"
 }

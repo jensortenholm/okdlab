@@ -1,8 +1,12 @@
 libvirt_uri = "qemu+ssh://root@172.16.1.10/system"
 
-coreos_image = "fedora-coreos-35.20220327.3.0-qemu.x86_64.qcow2"
+coreos_image = "scos-10.0.20251103-0-qemu.x86_64.qcow2"
 
 domainname = "okd4.staticlab.tld"
+
+kvm_host_ip = "172.16.1.10"
+
+ssh_private_key = "/home/me/.ssh/id_rsa"
 
 utility_hosts = {
   stcutility = {

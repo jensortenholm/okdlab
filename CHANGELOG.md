@@ -1,3 +1,8 @@
+2026-06-03
+
+* Update terraform to use version 0.9.7+ of the libvirt provider, which is a reimplementation with new API.
+* Test and verify with updated OKD and CoreOS images.
+
 2024-03-24
 
 * Add support for configuring registry credentials on the utility machine, to allow its container images to be pulled from a private registry.

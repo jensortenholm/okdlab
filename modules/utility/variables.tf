@@ -1,6 +1,6 @@
-variable "base_volume" {
+variable "base_volume_path" {
   type        = string
-  description = "Terraform id of the libvirt_volume to use as a base for the primary disk (i.e. the EL cloud image)."
+  description = "Path of the libvirt_volume to use as a base for the primary disk (i.e. the EL cloud image)."
 }
 
 variable "dnsmasq" {
@@ -149,4 +149,14 @@ variable "auth" {
   type        = bool
   description = "Set this to enable auth.json creation to provide credentials when pulling haproxy and dnsmasq images."
   default     = false  
+}
+
+variable "kvm_host_ip" {
+  type        = string
+  description = "The IP address of the KVM host, to facilitate uploading of ignition file which needs to be accessed locally"
+}
+
+variable "ssh_private_key" {
+  type        = string
+  description = "Path to the SSH private key file used to SSH into the KVM host as root, to facilitate uploading of ignition file which needs to be accessed locally"
 }

@@ -2,19 +2,38 @@ terraform {
   required_version = ">= 1.3"
   required_providers {
     libvirt = {
-      source = "dmacvicar/libvirt"
+      source  = "dmacvicar/libvirt"
+      version = "~> 0.9.7"
     }
     ignition = {
       source  = "community-terraform-providers/ignition"
       version = "2.1.3"
+    }
+    null = {
+      source = "hashicorp/null"
+      version = "~> 3.3.0"
     }
   }
 }
 
 resource "libvirt_volume" "disk" {
   name           = "${var.name}.qcow2"
-  base_volume_id = var.base_volume
-  size           = var.disk_size
+  pool           = "images"
+  capacity       = var.disk_size
+
+  backing_store = {
+    path = var.base_volume_path
+    
+    format = {
+      type = "qcow2"
+    }
+  }
+
+  target = {
+    format = {
+      type = "qcow2"
+    }
+  }
 }
 
 data "ignition_systemd_unit" "haproxy" {
@@ -121,37 +140,116 @@ resource "libvirt_ignition" "utility" {
   content = data.ignition_config.utility.rendered
 }
 
-resource "libvirt_domain" "host" {
-  name   = var.name
-  memory = var.memory
-  vcpu   = var.vcpus
+resource "null_resource" "upload" {
+  connection {
+    type        = "ssh"
+    host        = var.kvm_host_ip
+    user        = "root"
+    private_key = file(var.ssh_private_key)
+  }
 
-  coreos_ignition = libvirt_ignition.utility.id
-  
-  cpu {
+  provisioner "file" {
+    source      = libvirt_ignition.utility.path
+    destination = "/var/lib/libvirt/images/${var.name}.ign"
+  }
+}
+
+resource "libvirt_domain" "host" {
+  name        = var.name
+  memory      = var.memory
+  memory_unit = "MiB"
+  vcpu        = var.vcpus
+  type        = "kvm"
+
+  features = {
+    acpi = true
+  }
+
+  os = {
+    type         = "hvm"
+    type_arch    = "x86_64"
+    type_machine = "q35"
+  }
+
+  sys_info = [
+    {
+      fw_cfg = {
+        entry = [
+          {
+            name  = "opt/com.coreos/config"
+            value = ""
+            file = "/var/lib/libvirt/images/${var.name}.ign"
+          }
+        ]
+      }
+    }
+  ]
+
+  devices = {
+    graphics = [
+      {
+        vnc = {
+          listeners = [
+            {
+              address = {
+                address = var.vnc_address
+              }
+            }
+          ]
+        }
+      }
+    ]
+
+    consoles = [
+      {
+        targets = [
+          {
+            type = "virtio"
+            port = 0
+          }
+        ]
+      }
+    ]
+
+    disks = [
+      {
+        source = {
+          volume = {
+            pool = "images"
+            volume = libvirt_volume.disk.name
+          }
+        }
+        target = {
+          dev = "vda"
+          bus = "virtio"
+        }
+        driver = {
+          type = "qcow2"
+        }
+      },
+    ]
+
+    interfaces = [
+      {
+        type  = "network"
+        model = {
+          type = "virtio"
+        }
+        source = {
+          network = {
+            network = var.network
+          }
+        }
+        mac = {
+          address = var.mac
+        }
+      }
+    ]
+  }
+
+  cpu = {
     mode = "host-passthrough"
   }
 
-  graphics {
-    type           = "vnc"
-    listen_type    = "address"
-    listen_address = var.vnc_address
-  }
-
-  console {
-    type        = "pty"
-    target_port = "0"
-    target_type = "virtio"
-  }
-
-  disk {
-    volume_id = libvirt_volume.disk.id
-  }
-
-  network_interface {
-    network_name   = var.network
-    bridge         = var.network
-    hostname       = var.name
-    mac            = var.mac
-  }
+  running = true
 }

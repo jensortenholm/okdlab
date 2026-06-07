@@ -1,10 +1,10 @@
-# Installing OKD 4.15 on KVM using Terraform
+# Installing OKD 4.20 on KVM using Terraform
 
 ## Introduction
 
 This is by no means a polished and secured setup, but rather a quick and dirty solution to spin up OKD clusters in my homelab.
 
-I have tested this method of setting up OKD with versions 4.9 - 4.15.
+I have tested this method of setting up OKD with versions 4.9 - 4.20.
 
 ### Note on 4.12 and mirror-registry
 
@@ -30,10 +30,10 @@ It should do its work for a while, and your session should disconnect, as it cau
 
 ## Environment and KVM host setup
 
-In my homelab I have one server running AlmaLinux 9, with KVM installed. It is connected to my lab network using 2 VLANs, one which I use
+In my homelab I have one server running AlmaLinux 10, with KVM installed. It is connected to my lab network using 2 VLANs, one which I use
 for management access of the KVM host itself, and the other is used for the VMs.
 
-The KVM host is based on a minimal install of AlmaLinux 9. The first network interface on the server is configured with the management
+The KVM host is based on a minimal install of AlmaLinux 10. The first network interface on the server is configured with the management
 VLAN untagged, so the installation picks up its IP address with the default DHCP configuration.
 
 Once the OS is installed and the server has rebooted, a few configurations are needed.
@@ -65,23 +65,6 @@ Then configure the network with libvirt:
     virsh net-define newlabnet.xml
     virsh net-start newlabnet
     virsh net-autostart newlabnet
-
-### Configuration of a default storage pool
-
-Create an XML-file pool_default.xml describing the default storage pool, using /var/lib/libvirt/images as the location on disk:
-
-    <pool type='dir'>
-      <name>default</name>
-      <target>
-        <path>/var/lib/libvirt/images</path>
-      </target>
-    </pool>
-
-Configure the storage pool:
-
-    virsh pool-define pool_default.xml
-    virsh pool-start default
-    virsh pool-autostart default
 
 ## Preparing the environment for OKD
 
@@ -131,9 +114,12 @@ is done.
 
 To grab the correct fedora coreos image for this particular release, run the installer and grab the image location with jq:
 
-    openshift-install coreos print-stream-json | jq '.architectures.x86_64.artifacts.qemu.formats."qcow2.xz".disk.location'
+    openshift-install coreos print-stream-json | jq '.architectures.x86_64.artifacts.qemu.formats."qcow2.gz".disk.location'
 
-Then download the image.
+NOTE! If no image URL is found, especially if installing an older version of OKD, you likely need to change "qcow2.gz" to "qcow2.xz" to
+get a match.
+
+Download the image.
 
 Copy the downloaded image to the directory you plan to run terraform from.
 
@@ -173,6 +159,10 @@ The ignitions contains generated certificates with a short expiry for the bootst
 
 Copy the .ign files to the directory where you plan to run terraform from.
 
+### Decompress the image if its in .gz format
+
+    gunzip <filename>
+
 ### Decompress the image if its in .xz format
 
     xz -d <filename>
@@ -187,6 +177,7 @@ Copy the file you want to terraform.tfvars and customimze it to your needs, at t
 
 * The libvirt provider URI, to point at your KVM host.
 * Update image filenames to what you downloaded.
+* Update ssh_private_key to point at the SSH private key used to connect as root to the KVM host.
 * Change any IP or MAC addresses that might be different in your environment.
 * Change the network name to whatever your network is named in KVM.
 

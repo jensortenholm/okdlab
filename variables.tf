@@ -8,6 +8,11 @@ variable "coreos_image" {
   description = "Filename of the QCOW2 CoreOS image to use. Correct image to use needs to be extracted from openshift-install, see README.md."
 }
 
+variable "utility_coreos_image" {
+  type        = string
+  description = "Filename of the QCOW2 CoreOS image to use for the utility host."
+}
+
 variable "domainname" {
   type        = string
   description = "Cluster domainname, for example clustername.mydomain.tld."
@@ -52,4 +57,14 @@ variable "utility_hosts" {
   }))
   description = "Map of utility hosts to create. Only one host is needed, leave this variable empty if no utility host is to be created. Key is used as servername, value is another map with host configuration parameters."
   default     = {}
+}
+
+variable "kvm_host_ip" {
+  type        = string
+  description = "The IP address of the KVM host, to facilitate uploading of ignition file which needs to be accessed locally"
+}
+
+variable "ssh_private_key" {
+  type        = string
+  description = "Path to the SSH private key file used to SSH into the KVM host as root, to facilitate uploading of ignition file which needs to be accessed locally"
 }
